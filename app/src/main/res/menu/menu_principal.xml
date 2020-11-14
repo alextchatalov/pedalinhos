@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/cad_pedalinhos"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="Cadastrar"
+        android:onClick="cadastrar"
+        app:showAsAction="ifRoom|collapseActionView" />
+    <item
+        android:id="@+id/list_pedalinhos"
+        android:icon="@android:drawable/ic_dialog_dialer"
+        android:title="Pedalinhos"
+        android:onClick="lista"
+        app:showAsAction="ifRoom|collapseActionView" />
+</menu>
