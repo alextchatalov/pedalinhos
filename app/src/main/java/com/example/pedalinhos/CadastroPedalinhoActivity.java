@@ -8,23 +8,21 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.example.pedalinhos.database.AppDatabase;
 import com.example.pedalinhos.database.Connection;
 import com.example.pedalinhos.domain.Pedalinho;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class CadastroPedalinhoActivity extends AppCompatActivity {
 
-    private Spinner dropDown;
+    Spinner dropDown = findViewById(R.id.spinner);
     private EditText numeroPedalinho;
     private String tipoPedalinho;
     private AppDatabase db;
+    private Pedalinho pedalinho = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +32,18 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
         db = Connection.getConnection(getApplicationContext());
         numeroPedalinho = findViewById(R.id.editNumeroPedalinho);
         comboBoxTipoPedalinho();
+
+        Intent intent = getIntent();
+        if (intent.hasExtra("pedalinho")) {
+            pedalinho = (Pedalinho) intent.getSerializableExtra("pedalinho");
+            numeroPedalinho.setText(pedalinho.getNumeroPedalinho());
+            tipoPedalinho = pedalinho.getTipoPedalinho();
+            selectValue(dropDown, tipoPedalinho);
+        }
     }
 
     private void comboBoxTipoPedalinho() {
-        dropDown = findViewById(R.id.spinner);
+
 
         List<String> list = new ArrayList<>();
         list.add("Selecione o Tipo do Pedalinho");
@@ -63,19 +69,35 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
     }
 
     public void salvar(View view) {
-
+        String message = "";
         if (numeroPedalinho.getText().toString() != null &&
-            (tipoPedalinho != null || "".equals(tipoPedalinho.trim()))
-           ) {
-            Pedalinho pedalinho = new Pedalinho();
+                (tipoPedalinho != null || "".equals(tipoPedalinho.trim())) &&
+                pedalinho != null) {
+
+            pedalinho = new Pedalinho();
             pedalinho.setNumeroPedalinho(Integer.valueOf(numeroPedalinho.getText().toString()));
             pedalinho.setTipoPedalinho(tipoPedalinho);
             db.pedalinhoDAO().insert(pedalinho);
-            List<Pedalinho> all = db.pedalinhoDAO().getAll();
-            Toast.makeText(this, "Pedalinho com ID inserido: " + all.size(), Toast.LENGTH_SHORT).show();
+            message = "Pedalinho: " + pedalinho + " Salvo com Sucesso!";
+        } else {
+            pedalinho.setNumeroPedalinho(Integer.valueOf(numeroPedalinho.getText().toString()));
+            pedalinho.setTipoPedalinho(tipoPedalinho);
+            db.pedalinhoDAO().update(pedalinho);
+            message = "Pedalinho: " + pedalinho + " Alterado com Sucesso!";
         }
+
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(getApplicationContext(), ListarPedalinhosActivity.class);
         startActivity(intent);
+    }
+
+    private void selectValue(Spinner spinner, Object value) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).equals(value)) {
+                spinner.setSelection(i);
+                break;
+            }
+        }
     }
 }

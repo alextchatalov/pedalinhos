@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.pedalinhos.domain.Pedalinho;
 
@@ -20,4 +21,7 @@ public interface PedalinhoDAO {
 
     @Delete
     void delete(Pedalinho pedalinho);
+
+    @Update
+    void update(Pedalinho pedalinho);
 }
