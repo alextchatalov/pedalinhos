@@ -79,7 +79,7 @@ public class ListarPedalinhosActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         final Pedalinho selecionado = pedalinhosFiltrados.get(menuInfo.position);
         Intent intent = new Intent(this, CadastroPedalinhoActivity.class);
-        intent.putExtra("pedalinho", selecionado);
+        intent.putExtra(CadastroPedalinhoActivity.PEDALINHO_PARAM, selecionado);
         startActivity(intent);
     }
 }

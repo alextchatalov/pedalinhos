@@ -17,8 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CadastroPedalinhoActivity extends AppCompatActivity {
-
-    Spinner dropDown = findViewById(R.id.spinner);
+    
+    public static final String PEDALINHO_PARAM = "pedalinho";
+    private Spinner dropDown;
     private EditText numeroPedalinho;
     private String tipoPedalinho;
     private AppDatabase db;
@@ -28,15 +29,15 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_pedalinho);
-
+        dropDown = findViewById(R.id.spinner);
         db = Connection.getConnection(getApplicationContext());
         numeroPedalinho = findViewById(R.id.editNumeroPedalinho);
         comboBoxTipoPedalinho();
 
         Intent intent = getIntent();
-        if (intent.hasExtra("pedalinho")) {
-            pedalinho = (Pedalinho) intent.getSerializableExtra("pedalinho");
-            numeroPedalinho.setText(pedalinho.getNumeroPedalinho());
+        if (intent.hasExtra(PEDALINHO_PARAM)) {
+            pedalinho = (Pedalinho) intent.getSerializableExtra(PEDALINHO_PARAM);
+            numeroPedalinho.setText(Integer.toString(pedalinho.getNumeroPedalinho()));
             tipoPedalinho = pedalinho.getTipoPedalinho();
             selectValue(dropDown, tipoPedalinho);
         }
@@ -70,9 +71,8 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
 
     public void salvar(View view) {
         String message = "";
-        if (numeroPedalinho.getText().toString() != null &&
-                (tipoPedalinho != null || "".equals(tipoPedalinho.trim())) &&
-                pedalinho != null) {
+
+        if (pedalinho == null) {
 
             pedalinho = new Pedalinho();
             pedalinho.setNumeroPedalinho(Integer.valueOf(numeroPedalinho.getText().toString()));
