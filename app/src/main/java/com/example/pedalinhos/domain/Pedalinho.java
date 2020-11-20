@@ -78,5 +78,8 @@ public class Pedalinho implements Serializable {
         this.dataInicioUso = dataInicioUso;
     }
 
-
+    @Override
+    public String toString() {
+        return this.numeroPedalinho + " - " + this.getTipoPedalinho();
+    }
 }

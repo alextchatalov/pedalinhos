@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,6 +45,33 @@ public class MainActivity extends AppCompatActivity {
 
         onClickDisponiveis();
         onClickUsando();
+        monitorarTempoPedalinhosThread();
+    }
+
+    private void monitorarTempoPedalinhosThread() {
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                Calendar notificar = Calendar.getInstance();
+                Calendar tempoPedalinho = Calendar.getInstance();
+                while (true) {
+                    for (PedalinhoMarcao pedalinhoEmUso : usando) {
+                        notificar.setTime(pedalinhoEmUso.marcaoUsoPedalinho.getTempo());
+                        //tempoPedalinho.setTime(pedalinhoEmUso.marcaoUsoPedalinho.getTempo());
+                        notificar.add(Calendar.MINUTE, - 1);
+                        if (notificar.getTime().before(Calendar.getInstance().getTime()) &&
+                                !pedalinhoEmUso.pedalinho.isNotificado()) {
+                            System.out.println("Notificar pedalinho: " + pedalinhoEmUso.toString());
+                        }
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     private void onClickUsando() {

@@ -89,7 +89,7 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
 
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(getApplicationContext(), ListarPedalinhosActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
     }
 

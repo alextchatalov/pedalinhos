@@ -16,15 +16,14 @@ public class PedalinhoMarcao {
     @Override
     public String toString() {
         StringBuilder exibicao = new StringBuilder();
-        if (this.marcaoUsoPedalinho.getTempo() != null && pedalinho.isUsando()) {
+        if (this.marcaoUsoPedalinho != null && this.marcaoUsoPedalinho.getTempo() != null && pedalinho.isUsando()) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(this.marcaoUsoPedalinho.getTempo());
-            exibicao.append("( Termino em: ");
+            exibicao.append(" ( Termino em: ");
             exibicao.append(calendar.get(Calendar.HOUR_OF_DAY));
             exibicao.append(":");
             exibicao.append(calendar.get(Calendar.MINUTE));
             exibicao.append(" )");
-
         }
         return pedalinho.getNumeroPedalinho() + " - " + pedalinho.getTipoPedalinho() + exibicao.toString();
     }
