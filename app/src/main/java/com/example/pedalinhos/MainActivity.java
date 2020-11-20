@@ -16,9 +16,12 @@ import android.widget.Toast;
 
 import com.example.pedalinhos.database.AppDatabase;
 import com.example.pedalinhos.database.Connection;
+import com.example.pedalinhos.database.MarcacaoPedalinhoDAO;
+import com.example.pedalinhos.domain.MarcaoUsoPedalinho;
 import com.example.pedalinhos.domain.Pedalinho;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,8 +72,16 @@ public class MainActivity extends AppCompatActivity {
                 Pedalinho marcarPedalinhoComoUsando = (Pedalinho) listViewPedalinhosDisponiveis.getItemAtPosition(i);
                 if (!usando.contains(marcarPedalinhoComoUsando)) {
                     marcarPedalinhoComoUsando.setUsando(true);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.MINUTE,5);
+                    marcarPedalinhoComoUsando.setDataInicioUso(calendar.getTime());
+                    MarcaoUsoPedalinho marcacao = new MarcaoUsoPedalinho();
+                    marcacao.setPedalinho_id(marcarPedalinhoComoUsando.getId());
+                    marcacao.setTempo(calendar.getTime());
+                    db.marcacaoPedalinhoDAO().insert(marcacao);
                     db.pedalinhoDAO().update(marcarPedalinhoComoUsando);
                     atualizarListaPedalinhos();
+                    Toast.makeText(getApplicationContext(), "Marcação: " + marcacao.getTempo(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Pedalinho já sendo usando: " + marcarPedalinhoComoUsando.toString(), Toast.LENGTH_SHORT).show();
                 }

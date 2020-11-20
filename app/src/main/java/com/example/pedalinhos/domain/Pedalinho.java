@@ -6,6 +6,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 @Entity
@@ -79,6 +80,14 @@ public class Pedalinho implements Serializable {
 
     @Override
     public String toString() {
-        return numeroPedalinho + " - " + tipoPedalinho;
+        StringBuilder tempo = new StringBuilder();
+        if (this.dataInicioUso != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(this.getDataInicioUso());
+            tempo.append(calendar.get(Calendar.HOUR_OF_DAY));
+            tempo.append(" - ");
+            tempo.append(calendar.get(Calendar.MINUTE));
+        }
+        return numeroPedalinho + " - " + tipoPedalinho + tempo.toString();
     }
 }
