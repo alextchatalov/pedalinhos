@@ -52,17 +52,18 @@ public class MainActivity extends AppCompatActivity {
         new Thread( new Runnable() {
             @Override
             public void run() {
-                Calendar notificar = Calendar.getInstance();
-                Calendar tempoPedalinho = Calendar.getInstance();
+
                 while (true) {
+
                     for (PedalinhoMarcao pedalinhoEmUso : usando) {
-                        notificar.setTime(pedalinhoEmUso.marcaoUsoPedalinho.getTempo());
-                        //tempoPedalinho.setTime(pedalinhoEmUso.marcaoUsoPedalinho.getTempo());
-                        notificar.add(Calendar.MINUTE, - 1);
-                        if (notificar.getTime().before(Calendar.getInstance().getTime()) &&
-                                !pedalinhoEmUso.pedalinho.isNotificado()) {
-                            System.out.println("Notificar pedalinho: " + pedalinhoEmUso.toString());
+                        if (pedalinhoEmUso.isPedalinhoNaoNotificado()) {
+                            System.out.println("Notificar o Pedalinho: " + pedalinhoEmUso.toString());
+                            //TODO ALTERAR A COR DO BACKGROUND DA LISTA DO ITEM PARA NOTIFICAR
+                            //TODO OU EXIBIR UMA MENSAGEM PARA NOTIFICAR O PEDALINHO SOBRE O TEMPO
                         }
+                        //TODO CASO O PEDALINHO JÁ FOI NOTIFICADO OU O TEMPO JÁ ENCERROU HORA ATUAL > HORARIO TERMINO DO PEDALINHO
+                        //TODO EXIBIR OU MUDAR O BACKGROUD DE COR PARA AVISAR QUE O TEMPO ENCERROU
+                        //TODO CASO NÃO FOR NENHUM DESSES CASOS NÃO FAZER NADA
                     }
                     try {
                         Thread.sleep(5000);
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!usando.contains(marcarPedalinhoComoUsando)) {
                     marcarPedalinhoComoUsando.setUsando(true);
                     Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MINUTE,5);
+                    calendar.add(Calendar.MINUTE,2);
                     marcarPedalinhoComoUsando.setDataInicioUso(calendar.getTime());
                     MarcaoUsoPedalinho marcacao = new MarcaoUsoPedalinho();
                     marcacao.setPedalinho_id(marcarPedalinhoComoUsando.getId());

@@ -3,6 +3,8 @@ package com.example.pedalinhos.domain;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
+import com.example.pedalinhos.Configuracao;
+
 import java.util.Calendar;
 
 public class PedalinhoMarcao {
@@ -12,6 +14,15 @@ public class PedalinhoMarcao {
 
     @Relation(parentColumn = "id", entityColumn = "pedalinho_id")
     public MarcaoUsoPedalinho marcaoUsoPedalinho;
+
+    public boolean isPedalinhoNaoNotificado() {
+        Calendar notificar = Calendar.getInstance();
+        notificar.setTime(this.marcaoUsoPedalinho.getTempo());
+        notificar.add(Calendar.MINUTE, - Configuracao.TEMPO_NOTIFICAR);
+        return this.pedalinho.isUsando() &&
+               !this.pedalinho.isNotificado() &&
+                notificar.getTime().before(Calendar.getInstance().getTime());
+    }
 
     @Override
     public String toString() {
