@@ -20,6 +20,12 @@ public class Pedalinho implements Serializable {
     @ColumnInfo(name = "tipo_pedalinho")
     private String tipoPedalinho;
 
+    @ColumnInfo(name = "usando")
+    private boolean usando;
+
+    @ColumnInfo(name = "notificado")
+    private boolean notificado;
+
     @Ignore
     private Date dataInicioUso;
 
@@ -45,6 +51,22 @@ public class Pedalinho implements Serializable {
 
     public void setTipoPedalinho(String tipoPedalinho) {
         this.tipoPedalinho = tipoPedalinho;
+    }
+
+    public boolean isUsando() {
+        return usando;
+    }
+
+    public void setUsando(boolean usando) {
+        this.usando = usando;
+    }
+
+    public boolean isNotificado() {
+        return notificado;
+    }
+
+    public void setNotificado(boolean notificado) {
+        this.notificado = notificado;
     }
 
     public Date getDataInicioUso() {

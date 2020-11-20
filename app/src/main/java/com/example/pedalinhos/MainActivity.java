@@ -3,6 +3,7 @@ package com.example.pedalinhos;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView listViewPedalinhosDisponiveis;
     private List<Pedalinho> disponiveis = new ArrayList<>();
     private List<Pedalinho> usando = new ArrayList<>();
+    private ArrayAdapter<Pedalinho> adapterPedalinhoDisponiveis;
+    private ArrayAdapter<Pedalinho> adapterPedalinhoUsando;
     private AppDatabase db;
 
     @Override
@@ -32,15 +35,41 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         db = Connection.getConnection(getApplicationContext());
+        listViewPedalinhosDisponiveis = findViewById(R.id.pedalinhosDisponiveis);
+        listViewPedalinhosEmUso = findViewById(R.id.pedalinhosUsando);
         popularListasPedalinhos();
 
+        onClickDisponiveis();
+        onClickUsando();
+    }
+
+    private void onClickUsando() {
+        listViewPedalinhosEmUso.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Pedalinho pedalinhoEmUso = (Pedalinho) listViewPedalinhosEmUso.getItemAtPosition(i);
+                if (pedalinhoEmUso.isNotificado()) {
+                    pedalinhoEmUso.setNotificado(false);
+                    pedalinhoEmUso.setUsando(false);
+                    view.setBackgroundColor(Color.TRANSPARENT);
+                } else {
+                    pedalinhoEmUso.setNotificado(true);
+                    view.setBackgroundColor(Color.YELLOW);
+                }
+                db.pedalinhoDAO().update(pedalinhoEmUso);
+                atualizarListaPedalinhos();
+            }
+        });
+    }
+
+    private void onClickDisponiveis() {
         listViewPedalinhosDisponiveis.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Pedalinho marcarPedalinhoComoUsando = (Pedalinho) listViewPedalinhosDisponiveis.getItemAtPosition(i);
                 if (!usando.contains(marcarPedalinhoComoUsando)) {
-                    usando.add(marcarPedalinhoComoUsando);
-                    disponiveis.remove(marcarPedalinhoComoUsando);
+                    marcarPedalinhoComoUsando.setUsando(true);
+                    db.pedalinhoDAO().update(marcarPedalinhoComoUsando);
                     atualizarListaPedalinhos();
                 } else {
                     Toast.makeText(getApplicationContext(), "Pedalinho já sendo usando: " + marcarPedalinhoComoUsando.toString(), Toast.LENGTH_SHORT).show();
@@ -50,25 +79,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void popularListasPedalinhos() {
-        populaPedalinhosEmUso();
-        popularListaPedalinhosDisponiveis();
+        popularListas();
+        associarPedalinhosEmUsoAListView();
+        associarPedalinhosDisponiveisAListView();
     }
 
-    private void popularListaPedalinhosDisponiveis() {
-        listViewPedalinhosDisponiveis = findViewById(R.id.pedalinhosDisponiveis);
-        atualizarListaPedalinhos();
+    private void associarPedalinhosDisponiveisAListView() {
 
-        ArrayAdapter<Pedalinho> arrayAdapter = new ArrayAdapter<Pedalinho>(getApplicationContext(),
+        adapterPedalinhoDisponiveis = new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_list_item_1, disponiveis);
-        listViewPedalinhosDisponiveis.setAdapter(arrayAdapter);
+        listViewPedalinhosDisponiveis.setAdapter(adapterPedalinhoDisponiveis);
         registerForContextMenu(listViewPedalinhosDisponiveis);
     }
 
-    private void populaPedalinhosEmUso() {
-        listViewPedalinhosEmUso = findViewById(R.id.pedalinhosUsando);
-        ArrayAdapter<Pedalinho> arrayAdapter = new ArrayAdapter<Pedalinho>(getApplicationContext(),
+    private void associarPedalinhosEmUsoAListView() {
+
+        adapterPedalinhoUsando = new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_list_item_1, usando);
-        listViewPedalinhosEmUso.setAdapter(arrayAdapter);
+        listViewPedalinhosEmUso.setAdapter(adapterPedalinhoUsando);
         registerForContextMenu(listViewPedalinhosEmUso);
     }
 
@@ -95,13 +123,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         atualizarListaPedalinhos();
-
     }
     
     private void atualizarListaPedalinhos() {
-        disponiveis = db.pedalinhoDAO().getAll();
+        disponiveis.clear();
+        usando.clear();
+        popularListas();
+        adapterPedalinhoDisponiveis.notifyDataSetChanged();
+        adapterPedalinhoUsando.notifyDataSetChanged();
         listViewPedalinhosEmUso.invalidateViews();
         listViewPedalinhosDisponiveis.invalidateViews();
+    }
+
+    private void popularListas() {
+        disponiveis.addAll(db.pedalinhoDAO().buscarTodosOsPeladinhos(false));
+        usando.addAll(db.pedalinhoDAO().buscarTodosOsPeladinhos(true));
     }
 
 }

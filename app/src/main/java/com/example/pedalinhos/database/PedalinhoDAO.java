@@ -16,6 +16,12 @@ public interface PedalinhoDAO {
     @Query("SELECT * FROM pedalinho")
     List<Pedalinho> getAll();
 
+    @Query("SELECT * FROM pedalinho where usando = :usando  ")
+    List<Pedalinho> buscarTodosOsPeladinhos(boolean usando);
+
+    @Query("SELECT * FROM pedalinho where notificado = :notificado  ")
+    List<Pedalinho> buscarTodosOsPedalinhosNotificados(boolean notificado);
+
     @Insert
     void insert(Pedalinho pedalinho);
 

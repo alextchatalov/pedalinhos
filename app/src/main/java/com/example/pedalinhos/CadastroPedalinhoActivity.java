@@ -77,6 +77,7 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
             pedalinho = new Pedalinho();
             pedalinho.setNumeroPedalinho(Integer.valueOf(numeroPedalinho.getText().toString()));
             pedalinho.setTipoPedalinho(tipoPedalinho);
+            pedalinho.setUsando(false);
             db.pedalinhoDAO().insert(pedalinho);
             message = "Pedalinho: " + pedalinho + " Salvo com Sucesso!";
         } else {
