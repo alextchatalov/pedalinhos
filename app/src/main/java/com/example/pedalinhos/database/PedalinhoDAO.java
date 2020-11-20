@@ -7,6 +7,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.example.pedalinhos.domain.Pedalinho;
+import com.example.pedalinhos.domain.PedalinhoMarcao;
 
 import java.util.List;
 
@@ -17,10 +18,10 @@ public interface PedalinhoDAO {
     List<Pedalinho> getAll();
 
     @Query("SELECT * FROM pedalinho where usando = :usando  ")
-    List<Pedalinho> buscarTodosOsPeladinhos(boolean usando);
+    List<PedalinhoMarcao> buscarTodosOsPeladinhos(boolean usando);
 
     @Query("SELECT * FROM pedalinho where notificado = :notificado  ")
-    List<Pedalinho> buscarTodosOsPedalinhosNotificados(boolean notificado);
+    List<PedalinhoMarcao> buscarTodosOsPedalinhosNotificados(boolean notificado);
 
     @Insert
     void insert(Pedalinho pedalinho);

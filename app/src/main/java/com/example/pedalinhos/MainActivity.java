@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.example.pedalinhos.database.AppDatabase;
 import com.example.pedalinhos.database.Connection;
-import com.example.pedalinhos.database.MarcacaoPedalinhoDAO;
+import com.example.pedalinhos.domain.PedalinhoMarcao;
 import com.example.pedalinhos.domain.MarcaoUsoPedalinho;
 import com.example.pedalinhos.domain.Pedalinho;
 
@@ -27,10 +27,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private ListView listViewPedalinhosEmUso;
     private ListView listViewPedalinhosDisponiveis;
-    private List<Pedalinho> disponiveis = new ArrayList<>();
-    private List<Pedalinho> usando = new ArrayList<>();
-    private ArrayAdapter<Pedalinho> adapterPedalinhoDisponiveis;
-    private ArrayAdapter<Pedalinho> adapterPedalinhoUsando;
+    private List<PedalinhoMarcao> disponiveis = new ArrayList<>();
+    private List<PedalinhoMarcao> usando = new ArrayList<>();
+    private ArrayAdapter<PedalinhoMarcao> adapterPedalinhoDisponiveis;
+    private ArrayAdapter<PedalinhoMarcao> adapterPedalinhoUsando;
     private AppDatabase db;
 
     @Override
@@ -50,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
         listViewPedalinhosEmUso.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Pedalinho pedalinhoEmUso = (Pedalinho) listViewPedalinhosEmUso.getItemAtPosition(i);
+                PedalinhoMarcao marcao = (PedalinhoMarcao) listViewPedalinhosEmUso.getItemAtPosition(i);
+                Pedalinho pedalinhoEmUso = marcao.pedalinho;
                 if (pedalinhoEmUso.isNotificado()) {
                     pedalinhoEmUso.setNotificado(false);
                     pedalinhoEmUso.setUsando(false);
@@ -69,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
         listViewPedalinhosDisponiveis.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Pedalinho marcarPedalinhoComoUsando = (Pedalinho) listViewPedalinhosDisponiveis.getItemAtPosition(i);
+                PedalinhoMarcao marcacaoPedalinhoDisponivel = (PedalinhoMarcao) listViewPedalinhosDisponiveis.getItemAtPosition(i);
+                Pedalinho marcarPedalinhoComoUsando = marcacaoPedalinhoDisponivel.pedalinho;
                 if (!usando.contains(marcarPedalinhoComoUsando)) {
                     marcarPedalinhoComoUsando.setUsando(true);
                     Calendar calendar = Calendar.getInstance();

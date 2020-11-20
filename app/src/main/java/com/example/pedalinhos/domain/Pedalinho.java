@@ -78,16 +78,5 @@ public class Pedalinho implements Serializable {
         this.dataInicioUso = dataInicioUso;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder tempo = new StringBuilder();
-        if (this.dataInicioUso != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(this.getDataInicioUso());
-            tempo.append(calendar.get(Calendar.HOUR_OF_DAY));
-            tempo.append(" - ");
-            tempo.append(calendar.get(Calendar.MINUTE));
-        }
-        return numeroPedalinho + " - " + tipoPedalinho + tempo.toString();
-    }
+
 }
