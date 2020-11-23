@@ -7,7 +7,7 @@ import com.example.pedalinhos.Configuracao;
 
 import java.util.Calendar;
 
-public class PedalinhoMarcao {
+public class PedalinhoMarcao implements Comparable<PedalinhoMarcao> {
 
     @Embedded
     public Pedalinho pedalinho;
@@ -44,7 +44,8 @@ public class PedalinhoMarcao {
             exibicao.append(" ( Termino em: ");
             exibicao.append(calendar.get(Calendar.HOUR_OF_DAY));
             exibicao.append(":");
-            exibicao.append(calendar.get(Calendar.MINUTE));
+            String minutos = String.valueOf(calendar.get(Calendar.MINUTE));
+            exibicao.append(minutos.length() < 2 ? "0" : "").append(minutos);
             exibicao.append(" )");
         }
 
@@ -54,5 +55,13 @@ public class PedalinhoMarcao {
             exibicao.append(" - NOTIFICAR");
         }
         return pedalinho.getNumeroPedalinho() + " - " + pedalinho.getTipoPedalinho() + exibicao.toString();
+    }
+
+    @Override
+    public int compareTo(PedalinhoMarcao o) {
+        if (marcaoUsoPedalinho == null || marcaoUsoPedalinho.getTempo() == null || o.marcaoUsoPedalinho == null || o.marcaoUsoPedalinho.getTempo() == null) {
+            return 0;
+        }
+        return marcaoUsoPedalinho.getTempo().compareTo(o.marcaoUsoPedalinho.getTempo());
     }
 }

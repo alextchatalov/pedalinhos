@@ -1,9 +1,6 @@
 package com.example.pedalinhos;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,15 +12,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.example.pedalinhos.database.AppDatabase;
 import com.example.pedalinhos.database.Connection;
 import com.example.pedalinhos.domain.PedalinhoMarcao;
 import com.example.pedalinhos.domain.MarcaoUsoPedalinho;
 import com.example.pedalinhos.domain.Pedalinho;
-
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,13 +49,12 @@ public class MainActivity extends AppCompatActivity {
        return  new Thread( new Runnable() {
             @Override
             public void run() {
-                System.out.println("Iniciando Thread...");
                 while (true) {
 
                     for (PedalinhoMarcao pedalinhoEmUso : usando) {
 
                         if (pedalinhoEmUso.isPedalinhoEncerrado() || pedalinhoEmUso.isPedalinhoNaoNotificado()) {
-                            marcarPealinhoComoNotificadoouEncerrado();
+                            //marcarPealinhoComoNotificadoouEncerrado();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -85,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void marcarPealinhoComoNotificadoouEncerrado() {
-        for (int position=1; position<listViewPedalinhosEmUso.getCount(); position++) {
+        for (int position = 1; position < listViewPedalinhosEmUso.getCount(); position++) {
             PedalinhoMarcao pedalinhoMarcao = (PedalinhoMarcao) listViewPedalinhosEmUso.getAdapter().getItem(position);
             View view = listViewPedalinhosEmUso.getAdapter().getView(position, null, null);
 
@@ -105,17 +100,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
                 PedalinhoMarcao marcao = (PedalinhoMarcao) listViewPedalinhosEmUso.getItemAtPosition(i);
-                final Pedalinho pedalinhoEmUso = marcao.pedalinho;
+                Pedalinho pedalinhoEmUso = marcao.pedalinho;
 
                 if (marcao.isPedalinhoNaoNotificado()){
+                    System.out.println("NOTIFICADO pedalinho: " + pedalinhoEmUso);
                     pedalinhoEmUso.setNotificado(true);
                     view.setBackgroundColor(Color.YELLOW);
                 } else if (marcao.isPedalinhoEncerrado()) {
+                    System.out.println("ENCERRANDO pedalinho: " + pedalinhoEmUso);
                     pedalinhoEmUso.setNotificado(false);
                     pedalinhoEmUso.setUsando(false);
                     view.setBackgroundColor(Color.TRANSPARENT);
                 }else {
-
+                    System.out.println("CANCELANDO pedalinho: " + pedalinhoEmUso);
                     pedalinhoEmUso.setNotificado(false);
                     pedalinhoEmUso.setUsando(false);
                     view.setBackgroundColor(Color.TRANSPARENT);
@@ -137,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 db.pedalinhoDAO().update(pedalinhoEmUso);
                 atualizarListaPedalinhos();
+                atualizarThread();
             }
         });
     }
@@ -150,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!usando.contains(marcarPedalinhoComoUsando)) {
                     marcarPedalinhoComoUsando.setUsando(true);
                     Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MINUTE,2);
+                    calendar.add(Calendar.MINUTE,1);
                     MarcaoUsoPedalinho marcacao = new MarcaoUsoPedalinho();
                     marcacao.setPedalinho_id(marcarPedalinhoComoUsando.getId());
                     marcacao.setTempo(calendar.getTime());
@@ -158,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                     db.pedalinhoDAO().update(marcarPedalinhoComoUsando);
                     atualizarListaPedalinhos();
                     Toast.makeText(getApplicationContext(), "Marcação: " + marcacao.getTempo(), Toast.LENGTH_SHORT).show();
+                    atualizarThread();
                 } else {
                     Toast.makeText(getApplicationContext(), "Pedalinho já sendo usando: " + marcarPedalinhoComoUsando.toString(), Toast.LENGTH_SHORT).show();
                 }
@@ -225,7 +224,12 @@ public class MainActivity extends AppCompatActivity {
     private void popularListas() {
         disponiveis.addAll(db.pedalinhoDAO().buscarTodosOsPeladinhos(false));
         usando.addAll(db.pedalinhoDAO().buscarTodosOsPeladinhos(true));
-        //TODO QUANDO FOR LISTA DE USANDO TEM QUE ORDENAR POR TEMPO
+        Collections.sort(usando);
+    }
+
+    private void atualizarThread() {
+        monitorarTempoPedalinhosThread().interrupt();
+        monitorarTempoPedalinhosThread().start();
     }
 
 }
