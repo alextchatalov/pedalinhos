@@ -49,11 +49,11 @@ public class PedalinhoMarcao implements Comparable<PedalinhoMarcao> {
             exibicao.append(" )");
         }
 
-        if (this.isPedalinhoEncerrado()) {
-            exibicao.append(" TEMPO ENCERRADO");
-        } else if (this.isPedalinhoNaoNotificado()) {
-            exibicao.append(" - NOTIFICAR");
-        }
+//        if (this.isPedalinhoEncerrado()) {
+//            exibicao.append(" TEMPO ENCERRADO");
+//        } else if (this.isPedalinhoNaoNotificado()) {
+//            exibicao.append(" - NOTIFICAR");
+//        }
         return pedalinho.getNumeroPedalinho() + " - " + pedalinho.getTipoPedalinho() + exibicao.toString();
     }
 

@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!usando.contains(marcarPedalinhoComoUsando)) {
                     marcarPedalinhoComoUsando.setUsando(true);
                     Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MINUTE,1);
+                    calendar.add(Calendar.MINUTE,2);
                     MarcaoUsoPedalinho marcacao = new MarcaoUsoPedalinho();
                     marcacao.setPedalinho_id(marcarPedalinhoComoUsando.getId());
                     marcacao.setTempo(calendar.getTime());
@@ -172,16 +172,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void associarPedalinhosDisponiveisAListView() {
 
-        adapterPedalinhoDisponiveis = new ArrayAdapter<>(getApplicationContext(),
-                android.R.layout.simple_list_item_1, disponiveis);
+        adapterPedalinhoDisponiveis = new PedalinhoArrayAdapter(getApplicationContext(), disponiveis);
         listViewPedalinhosDisponiveis.setAdapter(adapterPedalinhoDisponiveis);
         registerForContextMenu(listViewPedalinhosDisponiveis);
     }
 
     private void associarPedalinhosEmUsoAListView() {
-
-        adapterPedalinhoUsando = new ArrayAdapter<>(getApplicationContext(),
-                android.R.layout.simple_list_item_1, usando);
+        adapterPedalinhoUsando = new PedalinhoArrayAdapter(getApplicationContext(), usando);
         listViewPedalinhosEmUso.setAdapter(adapterPedalinhoUsando);
         registerForContextMenu(listViewPedalinhosEmUso);
     }
