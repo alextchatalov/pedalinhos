@@ -2,9 +2,10 @@ package com.example.pedalinhos;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,19 +46,27 @@ public class MainActivity extends AppCompatActivity {
 
         onClickDisponiveis();
         onClickUsando();
-        monitorarTempoPedalinhosThread();
+        monitorarTempoPedalinhosThread().start();
     }
 
-    private void monitorarTempoPedalinhosThread() {
-        new Thread( new Runnable() {
+    private Thread monitorarTempoPedalinhosThread() {
+       return  new Thread( new Runnable() {
             @Override
             public void run() {
-
+                System.out.println("Iniciando Thread...");
                 while (true) {
 
                     for (PedalinhoMarcao pedalinhoEmUso : usando) {
-                        if (pedalinhoEmUso.isPedalinhoNaoNotificado()) {
-                            System.out.println("Notificar o Pedalinho: " + pedalinhoEmUso.toString());
+
+                        if (pedalinhoEmUso.isPedalinhoEncerrado() || pedalinhoEmUso.isPedalinhoNaoNotificado()) {
+                            marcarPealinhoComoNotificadoouEncerrado();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listViewPedalinhosEmUso.invalidateViews();
+                                    listViewPedalinhosDisponiveis.invalidateViews();
+                                }
+                            });
                             //TODO ALTERAR A COR DO BACKGROUND DA LISTA DO ITEM PARA NOTIFICAR
                             //TODO OU EXIBIR UMA MENSAGEM PARA NOTIFICAR O PEDALINHO SOBRE O TEMPO
                         }
@@ -72,22 +81,59 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        }).start();
+        });
+    }
+
+    private void marcarPealinhoComoNotificadoouEncerrado() {
+        for (int position=1; position<listViewPedalinhosEmUso.getCount(); position++) {
+            PedalinhoMarcao pedalinhoMarcao = (PedalinhoMarcao) listViewPedalinhosEmUso.getAdapter().getItem(position);
+            View view = listViewPedalinhosEmUso.getAdapter().getView(position, null, null);
+
+            if (pedalinhoMarcao.isPedalinhoEncerrado()) {
+                System.out.println("Pedalinho encerrado: " + pedalinhoMarcao);
+                view.setBackgroundColor(Color.RED);
+            } else if (pedalinhoMarcao.isPedalinhoNaoNotificado()) {
+                System.out.println("Pedalinho a notificar: " + pedalinhoMarcao);
+                view.setBackgroundColor(Color.YELLOW);
+            }
+            view.refreshDrawableState();
+        }
     }
 
     private void onClickUsando() {
         listViewPedalinhosEmUso.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
                 PedalinhoMarcao marcao = (PedalinhoMarcao) listViewPedalinhosEmUso.getItemAtPosition(i);
-                Pedalinho pedalinhoEmUso = marcao.pedalinho;
-                if (pedalinhoEmUso.isNotificado()) {
+                final Pedalinho pedalinhoEmUso = marcao.pedalinho;
+
+                if (marcao.isPedalinhoNaoNotificado()){
+                    pedalinhoEmUso.setNotificado(true);
+                    view.setBackgroundColor(Color.YELLOW);
+                } else if (marcao.isPedalinhoEncerrado()) {
                     pedalinhoEmUso.setNotificado(false);
                     pedalinhoEmUso.setUsando(false);
                     view.setBackgroundColor(Color.TRANSPARENT);
-                } else {
-                    pedalinhoEmUso.setNotificado(true);
-                    view.setBackgroundColor(Color.YELLOW);
+                }else {
+
+                    pedalinhoEmUso.setNotificado(false);
+                    pedalinhoEmUso.setUsando(false);
+                    view.setBackgroundColor(Color.TRANSPARENT);
+                    //TODO CRIAR UMA MENSAGEM DE VALIDAÇÃO
+//                    AlertDialog confirmar = new AlertDialog.Builder(getApplicationContext())
+//                            .setTitle("Atenção!")
+//                            .setMessage("Pedalinho no tempo, deseja cancelar?")
+//                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    pedalinhoEmUso.setNotificado(false);
+//                                    pedalinhoEmUso.setUsando(false);
+//                                    view.setBackgroundColor(Color.TRANSPARENT);
+//                                }
+//                            })
+//                            .setNegativeButton("Não", null)
+//                            .create();
+//                    confirmar.show();
                 }
                 db.pedalinhoDAO().update(pedalinhoEmUso);
                 atualizarListaPedalinhos();
@@ -105,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
                     marcarPedalinhoComoUsando.setUsando(true);
                     Calendar calendar = Calendar.getInstance();
                     calendar.add(Calendar.MINUTE,2);
-                    marcarPedalinhoComoUsando.setDataInicioUso(calendar.getTime());
                     MarcaoUsoPedalinho marcacao = new MarcaoUsoPedalinho();
                     marcacao.setPedalinho_id(marcarPedalinhoComoUsando.getId());
                     marcacao.setTempo(calendar.getTime());
@@ -180,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
     private void popularListas() {
         disponiveis.addAll(db.pedalinhoDAO().buscarTodosOsPeladinhos(false));
         usando.addAll(db.pedalinhoDAO().buscarTodosOsPeladinhos(true));
+        //TODO QUANDO FOR LISTA DE USANDO TEM QUE ORDENAR POR TEMPO
     }
 
 }

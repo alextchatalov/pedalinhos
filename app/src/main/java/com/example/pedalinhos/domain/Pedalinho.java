@@ -27,9 +27,6 @@ public class Pedalinho implements Serializable {
     @ColumnInfo(name = "notificado")
     private boolean notificado;
 
-    @Ignore
-    private Date dataInicioUso;
-
     public Long getId() {
         return id;
     }
@@ -68,14 +65,6 @@ public class Pedalinho implements Serializable {
 
     public void setNotificado(boolean notificado) {
         this.notificado = notificado;
-    }
-
-    public Date getDataInicioUso() {
-        return dataInicioUso;
-    }
-
-    public void setDataInicioUso(Date dataInicioUso) {
-        this.dataInicioUso = dataInicioUso;
     }
 
     @Override

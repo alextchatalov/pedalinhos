@@ -16,12 +16,23 @@ public class PedalinhoMarcao {
     public MarcaoUsoPedalinho marcaoUsoPedalinho;
 
     public boolean isPedalinhoNaoNotificado() {
-        Calendar notificar = Calendar.getInstance();
-        notificar.setTime(this.marcaoUsoPedalinho.getTempo());
-        notificar.add(Calendar.MINUTE, - Configuracao.TEMPO_NOTIFICAR);
-        return this.pedalinho.isUsando() &&
-               !this.pedalinho.isNotificado() &&
-                notificar.getTime().before(Calendar.getInstance().getTime());
+        if (this.marcaoUsoPedalinho != null && this.marcaoUsoPedalinho.getTempo() != null) {
+            Calendar notificar = Calendar.getInstance();
+            notificar.setTime(this.marcaoUsoPedalinho.getTempo());
+            notificar.add(Calendar.MINUTE, -Configuracao.TEMPO_NOTIFICAR);
+            return this.pedalinho.isUsando() &&
+                    !this.pedalinho.isNotificado() &&
+                    notificar.getTime().before(Calendar.getInstance().getTime());
+        }
+        return false;
+    }
+
+    public boolean isPedalinhoEncerrado() {
+        if (this.marcaoUsoPedalinho != null && this.marcaoUsoPedalinho.getTempo() != null) {
+            return this.pedalinho.isUsando() &&
+                    this.marcaoUsoPedalinho.getTempo().before(Calendar.getInstance().getTime());
+        }
+        return false;
     }
 
     @Override
@@ -35,6 +46,12 @@ public class PedalinhoMarcao {
             exibicao.append(":");
             exibicao.append(calendar.get(Calendar.MINUTE));
             exibicao.append(" )");
+        }
+
+        if (this.isPedalinhoEncerrado()) {
+            exibicao.append(" TEMPO ENCERRADO");
+        } else if (this.isPedalinhoNaoNotificado()) {
+            exibicao.append(" - NOTIFICAR");
         }
         return pedalinho.getNumeroPedalinho() + " - " + pedalinho.getTipoPedalinho() + exibicao.toString();
     }
