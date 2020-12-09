@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             if (hoje.after(dataLimite)) {
                 Toast.makeText(MainActivity.this, "O tempo limite de utilizar o aplicativo se expirou em: " + new SimpleDateFormat("dd/MM/yyyy").format(dataLimite), Integer.valueOf(6)).show();
                 this.finishAffinity();
+            } else {
+                Toast.makeText(MainActivity.this, "Você poderá utilizar o aplicativo até: " + new SimpleDateFormat("dd/MM/yyyy").format(dataLimite), Integer.valueOf(6)).show();
             }
         } catch (ParseException e) {
             Toast.makeText(MainActivity.this, "Erro ao abrir o Aplicativo: " + e.getMessage(), Integer.valueOf(6)).show();
