@@ -17,9 +17,14 @@ import com.example.pedalinhos.database.Connection;
 import com.example.pedalinhos.domain.PedalinhoMarcao;
 import com.example.pedalinhos.domain.MarcaoUsoPedalinho;
 import com.example.pedalinhos.domain.Pedalinho;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Date hoje = new Date();
+        fecharAppNaDataLimite(hoje);
         db = Connection.getConnection(getApplicationContext());
         listViewPedalinhosDisponiveis = findViewById(R.id.pedalinhosDisponiveis);
         listViewPedalinhosEmUso = findViewById(R.id.pedalinhosUsando);
@@ -43,6 +50,19 @@ public class MainActivity extends AppCompatActivity {
         onClickDisponiveis();
         onClickUsando();
         monitorarTempoPedalinhosThread().start();
+    }
+
+    private void fecharAppNaDataLimite(Date hoje) {
+        Date dataLimite = null;
+        try {
+            dataLimite = new SimpleDateFormat("dd/MM/yyyy").parse("15/01/2021");
+            if (hoje.after(dataLimite)) {
+                Toast.makeText(MainActivity.this, "O tempo limite de utilizar o aplicativo se expirou em: " + new SimpleDateFormat("dd/MM/yyyy").format(dataLimite), Integer.valueOf(6)).show();
+                this.finishAffinity();
+            }
+        } catch (ParseException e) {
+            Toast.makeText(MainActivity.this, "Erro ao abrir o Aplicativo: " + e.getMessage(), Integer.valueOf(6)).show();
+        }
     }
 
     private Thread monitorarTempoPedalinhosThread() {
