@@ -52,7 +52,7 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
         list.add("Barco");
         list.add("Caiaque");
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, list);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropDown.setAdapter(adapter);
         dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -64,7 +64,7 @@ public class CadastroPedalinhoActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                //Do nothing
             }
         });
     }

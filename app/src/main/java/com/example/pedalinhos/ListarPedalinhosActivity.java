@@ -33,7 +33,7 @@ public class ListarPedalinhosActivity extends AppCompatActivity {
         listView = findViewById(R.id.lista_pedalinhos);
         pedalinhos = db.pedalinhoDAO().getAll();
         pedalinhosFiltrados.addAll(pedalinhos);
-        ArrayAdapter<Pedalinho> arrayAdapter = new ArrayAdapter<Pedalinho>(getApplicationContext(),
+        ArrayAdapter<Pedalinho> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_list_item_1, pedalinhosFiltrados);
         listView.setAdapter(arrayAdapter);
         registerForContextMenu(listView);
